@@ -1,0 +1,28 @@
+---
+- name: extrepo enable proxmox-pve
+  command:
+    cmd: /usr/bin/extrepo enable proxmox-pve
+  changed_when: False
+- name: install software
+  apt:
+    name: "{{ item }}"
+    state: present
+    install_recommends: False
+  loop:
+    - proxmox-ve
+    - pve-headers
+    - haveged
+    - wireguard-dkms
+  loop_control:
+    loop_var: item
+- name: load wireguard module
+  lineinfile:
+    path: /etc/modules
+    line: 'wireguard'
+    create: yes
+
+- include: "50-proxmox.yml"
+  loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
+  loop_control:
+    loop_var: item
+  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc is defined

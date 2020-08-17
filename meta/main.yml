@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: Adrian Reyer <lihas@lihas.de>
+  description: Install Proxmox PVE (PVE6) on Debian Buster and configure LXCs
+  license: GPL-3.0-or-later
+  galaxy_tags: []
+dependencies:
+  - name: lihas-common
+    src: https://github.com/LinuxHaus/ansible-lihas-common.git
