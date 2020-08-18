@@ -1,8 +1,26 @@
 ---
+- name: remove legacy /etc/apt/sources.list.d/proxmox.list
+  file:
+    path: /etc/apt/sources.list.d/proxmox.list
+    state: absent
+  register: result
 - name: extrepo enable proxmox-pve
   command:
     cmd: /usr/bin/extrepo enable proxmox-pve
   changed_when: False
+  register: result
+- name: set_apt_update
+  set_fact:
+    apt_update: True
+  when: result.changed == True
+- name: apt update
+  apt:
+    update_cache: True
+  when: apt_update == True
+- name: reset_apt_update
+  set_fact:
+    apt_update: False
+  when: apt_update == True
 - name: install software
   apt:
     name: "{{ item }}"
