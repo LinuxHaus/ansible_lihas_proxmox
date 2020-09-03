@@ -12,7 +12,7 @@
 - name: set_apt_update
   set_fact:
     apt_update: True
-  when: '"Configuration enabled" in result.stdout'
+  when: '"repository already existed" not in result.stdout'
 - name: apt update
   apt:
     update_cache: True
