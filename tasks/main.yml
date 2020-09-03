@@ -33,6 +33,10 @@
     - wireguard-dkms
   loop_control:
     loop_var: item
+- name: remove /etc/apt/sources.list.d/pve-enterprise.list
+  file:
+    path: /etc/apt/sources.list.d/pve-enterprise.list
+    state: absent
 - name: load wireguard module
   lineinfile:
     path: /etc/modules
