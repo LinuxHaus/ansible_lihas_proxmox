@@ -21,6 +21,9 @@
         index_var: netidx
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[item].net is defined )
     - command:
+        cmd: "pct set {{ item | quote }} -pool{{ hostvars[inventory_hostname].roles.proxmox.lxc[item].pool | quote }}"
+      when: ( hostvars[inventory_hostname].roles.proxmox.lxc[item].pool is defined )
+    - command:
         cmd: "pct start {{ item | quote }}"
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[item].start is defined and hostvars[inventory_hostname].roles.proxmox.lxc[item].start==1 )
   when: cmd_results.stdout_lines[0] == "0"
