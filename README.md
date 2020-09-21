@@ -1,5 +1,5 @@
 # ansible-lihas-proxmox
-Installs Proxmox PVE6
+Installs Proxmox PVE6 and adds LXCs, if you alread have a PVE6, use ansible-lihas-proxmox-lxc for the LXC-only part
 
 added Features:
 * wireguard Module
