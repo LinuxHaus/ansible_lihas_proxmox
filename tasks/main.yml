@@ -47,28 +47,28 @@
     name: net.ipv4.conf.default.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
     sysctl_set: yes
-    value: 1
+    value: "1"
   when: forward_ipv4 is defined
 - name: sysctl ipv4 forwarding all
   sysctl:
     name: net.ipv4.conf.all.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
     sysctl_set: yes
-    value: 1
+    value: "1"
   when: forward_ipv4 is defined
 - name: sysctl ipv6 forwarding default
   sysctl:
     name: net.ipv6.conf.default.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
     sysctl_set: yes
-    value: 1
+    value: "1"
   when: forward_ipv6 is defined
 - name: sysctl ipv6 forwarding all
   sysctl:
     name: net.ipv6.conf.all.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
     sysctl_set: yes
-    value: 1
+    value: "1"
   when: forward_ipv6 is defined
 
 - include: "50-proxmox.yml"
