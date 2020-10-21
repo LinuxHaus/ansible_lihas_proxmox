@@ -42,6 +42,34 @@
     path: /etc/modules
     line: 'wireguard'
     create: yes
+- name: sysctl ipv4 forwarding default
+  sysctl:
+    name: sys.net.ipv4.conf.default.forwarding
+    sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
+    sysctl_set: yes
+    value: 1
+  when: forward_ipv4 is defined
+- name: sysctl ipv4 forwarding all
+  sysctl:
+    name: sys.net.ipv4.conf.all.forwarding
+    sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
+    sysctl_set: yes
+    value: 1
+  when: forward_ipv4 is defined
+- name: sysctl ipv6 forwarding default
+  sysctl:
+    name: sys.net.ipv6.conf.default.forwarding
+    sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
+    sysctl_set: yes
+    value: 1
+  when: forward_ipv6 is defined
+- name: sysctl ipv6 forwarding all
+  sysctl:
+    name: sys.net.ipv6.conf.all.forwarding
+    sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
+    sysctl_set: yes
+    value: 1
+  when: forward_ipv6 is defined
 
 - include: "50-proxmox.yml"
   loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"

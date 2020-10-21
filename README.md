@@ -7,6 +7,8 @@ added Features:
 # Konfiguration
 Variables:
 ```
+forward_ipv6: [0|1]
+forward_ipv4: [0|1]
 roles:
   proxmox:
     templates:
