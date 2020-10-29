@@ -35,6 +35,7 @@
     - pve-headers
     - haveged
     - wireguard-dkms
+    - zfsutils-linux
   loop_control:
     loop_var: item
 - name: remove /etc/apt/sources.list.d/pve-enterprise.list
