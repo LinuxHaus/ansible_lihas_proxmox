@@ -29,7 +29,7 @@
   apt:
     name: "{{ item }}"
     state: present
-    install_recommends: False
+    install_recommends: True
   loop:
     - proxmox-ve
     - pve-headers
