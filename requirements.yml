@@ -1,0 +1,3 @@
+- name: lihas_proxmox
+  src: https://github.com/LinuxHaus/ansible_lihas_proxmox.git
+  version: origin/master

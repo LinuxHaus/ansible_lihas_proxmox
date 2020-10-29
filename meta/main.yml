@@ -4,7 +4,13 @@ galaxy_info:
   description: Install Proxmox PVE (PVE6) on Debian Buster and configure LXCs
   license: GPL-3.0-or-later
   galaxy_tags: []
+  min_ansible_version: 2.4
+  platforms:
+    - name: Debian
+      versions:
+      - all
 dependencies:
-  - name: lihas-common
-    src: https://github.com/LinuxHaus/ansible-lihas-common.git
+  - name: lihas_common
+    src: https://github.com/LinuxHaus/ansible_lihas_common.git
     version: origin/master
+    tags: [never]

@@ -1,4 +1,8 @@
 ---
+- name: include lihas_common
+  include_role:
+    name: lihas_common
+  when: role_done_lihas_common is not defined
 - name: remove legacy /etc/apt/sources.list.d/proxmox.list
   file:
     path: /etc/apt/sources.list.d/proxmox.list
@@ -16,11 +20,11 @@
 - name: apt update
   apt:
     update_cache: True
-  when: apt_update == True
+  when: apt_update
 - name: reset_apt_update
   set_fact:
     apt_update: False
-  when: apt_update == True
+  when: apt_update
 - name: install software
   apt:
     name: "{{ item }}"
@@ -42,6 +46,9 @@
     path: /etc/modules
     line: 'wireguard'
     create: yes
+    owner: root
+    group: root
+    mode: 0444
 - name: sysctl ipv4 forwarding default
   sysctl:
     name: net.ipv4.conf.default.forwarding

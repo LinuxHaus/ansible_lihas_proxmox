@@ -1,19 +1,23 @@
-- shell:
+- name: check for existing lxc
+  shell:
     cmd: "find /etc/pve/nodes/*/{qemu-server,lxc} | grep /{{ lxcid | quote }}.conf | wc -l"
   register: cmd_results
   changed_when: False
 - name: LXC create {{ lxcid }}
   block:
-    - command:
+    - name: pct create
+      command:
         cmd: "pct create {{ lxcid | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].template | default(hostvars[inventory_hostname].roles.proxmox.templates.debian_latest) | quote }} -rootfs {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].rootfs | default('local:8') | quote }} -cmode {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].cmode | default('shell') | quote }} -memory {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].memory | default(2048) | quote }} -swap {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].swap | default(512) | quote }} -features '{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].features | default() | quote }}' -hostname {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].hostname | default('lxc') | quote }} -unprivileged {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].unprivileged | default(1) | quote }} -onboot {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].onboot | default(0) | quote }} -ssh-public-keys /root/.ssh//authorized_keys{% if hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pool is defined %} -pool {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pool }}{% endif %}{% if hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].nameserver is defined %} -nameserver '{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].nameserver }}'{% endif %}"
-    - command:
+    - name: pct set mp
+      command:
         cmd: "pct set {{ lxcid | quote }} -mp{{ mpidx | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp[mpidx] | quote }}"
       loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp }}"
       loop_control:
         loop_var: dummy
         index_var: mpidx
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp is defined )
-    - command:
+    - name: pct set net
+      command:
         cmd: "pct set {{ lxcid | quote }} -net{{ netidx | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].net[netidx] | quote }}"
       loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].net }}"
       loop_control:
@@ -33,7 +37,8 @@
 #        loop_var: pctextra
 #        index_var: pctidx
 #      when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pct_extra is defined )
-    - command:
+    - name: pct start
+      command:
         cmd: "pct start {{ lxcid | quote }}"
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].start is defined and hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].start==1 )
   when: cmd_results.stdout_lines[0] == "0"

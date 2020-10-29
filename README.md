@@ -2,9 +2,31 @@
 Installs Proxmox PVE6
 
 added Features:
-* wireguard Module
 
-# Konfiguration
+* wireguard Module preloaded to enable wireguard in LXCs
+
+## Requirements
+
+To run solo:
+```
+ansible-galaxy install -r requirements.yml
+ansible-playbook -i localhost, proxmox.yml
+```
+
+## Dependencies
+
+* lihas_common
+
+## Example Playbook
+
+```
+---
+- hosts: '*'
+  role: lihas_proxmox
+...
+```
+
+# Configuration
 Variables:
 ```
 forward_ipv6: [0|1]

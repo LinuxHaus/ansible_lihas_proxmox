@@ -1,0 +1,5 @@
+---
+- hosts: '*'
+  roles:
+    - lihas_proxmox
+...
