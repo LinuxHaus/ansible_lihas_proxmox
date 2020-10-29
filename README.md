@@ -9,6 +9,8 @@ added Features:
 
 To run solo:
 ```
+# make sure the FQDN points to the IP you want on the (future) proxmox host
+
 ansible-galaxy install -r requirements.yml
 ansible-playbook -i localhost, proxmox.yml
 ```
