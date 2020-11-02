@@ -33,6 +33,12 @@ Variables:
 ```
 forward_ipv6: [0|1]
 forward_ipv4: [0|1]
+%:
+  config:
+    hosts:
+      "MY.MANAGE.MENT.IP":
+         - pve.example.com
+         - pve
 roles:
   proxmox:
     templates:
