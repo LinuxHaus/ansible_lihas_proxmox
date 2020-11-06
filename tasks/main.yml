@@ -42,14 +42,23 @@
   file:
     path: /etc/apt/sources.list.d/pve-enterprise.list
     state: absent
-- name: load wireguard module
+- name: load wireguard af_key ah4 ipcomp esp xfrm4 xfrm_tunnel tunnel modules
   lineinfile:
     path: /etc/modules
-    line: 'wireguard'
+    line: '{{ item }}'
     create: yes
     owner: root
     group: root
     mode: 0444
+  loop:
+    - wireguard
+    - af_key
+    - ah4
+    - ipcomp
+    - esp
+    - xfrm4
+    - xfrm_tunnel
+    - tunnel
 - name: sysctl ipv4 forwarding default
   sysctl:
     name: net.ipv4.conf.default.forwarding
