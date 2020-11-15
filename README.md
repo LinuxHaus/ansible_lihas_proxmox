@@ -1,4 +1,4 @@
-# ansible-lihas-proxmox
+# lihas_proxmox
 Installs Proxmox PVE6
 
 added Features:
