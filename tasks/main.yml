@@ -54,11 +54,22 @@
     - wireguard
     - af_key
     - ah4
+    - ah6
     - ipcomp
-    - esp
-    - xfrm4
-    - xfrm_tunnel
-    - tunnel
+    - esp4
+    - esp6
+    - xfrm4_tunnel
+    - xfrm6_tunnel
+    - tunnel4
+    - tunnel6
+    - tun
+    - ppp-compress-18
+    - ppp_mppe
+    - ppp_deflate
+    - ppp_async
+    - pppoatm
+    - ppp_generic
+
 - name: sysctl ipv4 forwarding default
   sysctl:
     name: net.ipv4.conf.default.forwarding
