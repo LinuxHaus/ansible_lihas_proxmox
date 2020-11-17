@@ -63,12 +63,13 @@
     - tunnel4
     - tunnel6
     - tun
-    - ppp-compress-18
-    - ppp_mppe
-    - ppp_deflate
     - ppp_async
-    - pppoatm
+    - ppp-compress-18
+    - ppp_deflate
     - ppp_generic
+    - ppp_mppe
+    - pppoatm
+    - pptp
 
 - name: sysctl ipv4 forwarding default
   sysctl:
