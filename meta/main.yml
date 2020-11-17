@@ -12,5 +12,5 @@ galaxy_info:
 dependencies:
   - name: lihas_common
     src: https://github.com/LinuxHaus/ansible_lihas_common.git
-    version: origin/master
+    version: latest
     tags: [never]
