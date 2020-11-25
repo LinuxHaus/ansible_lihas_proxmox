@@ -1,6 +1,7 @@
 - name: check for existing lxc
   shell:
-    cmd: "find /etc/pve/nodes/*/{qemu-server,lxc} | grep /{{ lxcid | quote }}.conf | wc -l"
+    cmd: "find /etc/pve/ -name {{ lxcid | quote }}.conf | wc -l"
+#    cmd: "find /etc/pve/{nodes/*/,}{qemu-server,lxc} -name {{ lxcid | quote }}.conf | wc -l"
   register: cmd_results
   changed_when: False
 - name: LXC create {{ lxcid }}
