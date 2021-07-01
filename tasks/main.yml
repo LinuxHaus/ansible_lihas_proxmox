@@ -3,6 +3,8 @@
   include_role:
     name: lihas_common
   when: role_done_lihas_common is not defined
+  tags:
+    - create_lxc
 - name: remove legacy /etc/apt/sources.list.d/proxmox.list
   file:
     path: /etc/apt/sources.list.d/proxmox.list
@@ -105,3 +107,5 @@
   loop_control:
     loop_var: lxcid
   when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc is defined
+  tags:
+    - create_lxc

@@ -4,6 +4,8 @@
 #    cmd: "find /etc/pve/{nodes/*/,}{qemu-server,lxc} -name {{ lxcid | quote }}.conf | wc -l"
   register: cmd_results
   changed_when: False
+  tags:
+    - create_lxc
 - name: LXC create {{ lxcid }}
   block:
     - name: pct create
@@ -43,4 +45,5 @@
         cmd: "pct start {{ lxcid | quote }}"
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].start is defined and hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].start==1 )
   when: cmd_results.stdout_lines[0] == "0"
-
+  tags:
+    - create_lxc
