@@ -66,3 +66,6 @@ Variables are mostly the `pct` parameters, additionally:
   * proxmox: use ha-manager
   * application: non-proxmox application cluster
 * hagroup: ha-manager group name
+
+## Tags
+* extrepo: run extrepo parts [default]

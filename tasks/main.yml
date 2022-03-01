@@ -15,10 +15,14 @@
     cmd: /usr/bin/extrepo enable proxmox-pve
   changed_when: False
   register: result
+  tags:
+  - extrepo
 - name: set_apt_update
   set_fact:
     apt_update: True
   when: '"repository already existed" not in result.stdout'
+  tags:
+  - extrepo
 - name: apt update
   apt:
     update_cache: True
