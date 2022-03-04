@@ -5,6 +5,9 @@
   when: role_done_lihas_common is not defined
   tags:
     - create_lxc
+- name: apt_update init
+  set_fact:
+    apt_update: apt_update | default(False)
 - name: remove legacy /etc/apt/sources.list.d/proxmox.list
   file:
     path: /etc/apt/sources.list.d/proxmox.list
@@ -30,7 +33,7 @@
 - name: reset_apt_update
   set_fact:
     apt_update: False
-  when: apt_update | default(False)
+  when: apt_update
 - name: install software
   apt:
     name: "{{ item }}"
