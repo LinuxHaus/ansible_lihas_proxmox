@@ -29,7 +29,7 @@
 - name: apt update
   apt:
     update_cache: True
-  when: apt_update | default(False)
+  when: apt_update
 - name: reset_apt_update
   set_fact:
     apt_update: False
