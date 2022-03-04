@@ -30,7 +30,7 @@
 - name: reset_apt_update
   set_fact:
     apt_update: False
-  when: apt_update
+  when: apt_update | default(False)
 - name: install software
   apt:
     name: "{{ item }}"
