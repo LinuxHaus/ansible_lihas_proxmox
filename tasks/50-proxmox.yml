@@ -6,6 +6,7 @@
   changed_when: False
   tags:
     - create_lxc
+  become: yes
 - name: LXC create {{ lxcid }}
   block:
     - name: pct create
@@ -47,3 +48,4 @@
   when: cmd_results.stdout_lines[0] == "0"
   tags:
     - create_lxc
+  become: yes

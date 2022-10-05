@@ -8,11 +8,13 @@
 - name: apt_update init
   set_fact:
     apt_update: apt_update | default(False)
+  become: yes
 - name: remove legacy /etc/apt/sources.list.d/proxmox.list
   file:
     path: /etc/apt/sources.list.d/proxmox.list
     state: absent
   register: result
+  become: yes
 - name: extrepo enable proxmox-pve
   command:
     cmd: /usr/bin/extrepo enable proxmox-pve
@@ -20,19 +22,23 @@
   register: result
   tags:
   - extrepo
+  become: yes
 - name: set_apt_update
   set_fact:
     apt_update: True
   when: '"repository already existed" not in result.stdout'
   tags:
   - extrepo
+  become: yes
 - name: apt update
   apt:
     update_cache: True
   when: apt_update | default(False)
+  become: yes
 - name: reset_apt_update
   set_fact:
     apt_update: False
+  become: yes
 - name: install software
   apt:
     name: "{{ item }}"
@@ -46,10 +52,12 @@
     - zfsutils-linux
   loop_control:
     loop_var: item
+  become: yes
 - name: remove /etc/apt/sources.list.d/pve-enterprise.list
   file:
     path: /etc/apt/sources.list.d/pve-enterprise.list
     state: absent
+  become: yes
 - name: load wireguard af_key ah4 ipcomp esp xfrm4 xfrm_tunnel tunnel modules
   lineinfile:
     path: /etc/modules
@@ -78,6 +86,7 @@
     - ppp_mppe
     - pppoatm
     - pptp
+  become: yes
 
 - name: sysctl ipv4 forwarding default
   sysctl:
@@ -86,6 +95,7 @@
     sysctl_set: yes
     value: "{{ forward_ipv4 }}"
   when: forward_ipv4 is defined
+  become: yes
 - name: sysctl ipv4 forwarding all
   sysctl:
     name: net.ipv4.conf.all.forwarding
@@ -93,6 +103,7 @@
     sysctl_set: yes
     value: "{{ forward_ipv4 }}"
   when: forward_ipv4 is defined
+  become: yes
 - name: sysctl ipv6 forwarding default
   sysctl:
     name: net.ipv6.conf.default.forwarding
@@ -100,6 +111,7 @@
     sysctl_set: yes
     value: "{{ forward_ipv6 }}"
   when: forward_ipv6 is defined
+  become: yes
 - name: sysctl ipv6 forwarding all
   sysctl:
     name: net.ipv6.conf.all.forwarding
@@ -107,8 +119,9 @@
     sysctl_set: yes
     value: "{{ forward_ipv6 }}"
   when: forward_ipv6 is defined
+  become: yes
 
-- include: "50-proxmox.yml"
+- include_tasks: "50-proxmox.yml"
   loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
   loop_control:
     loop_var: lxcid
