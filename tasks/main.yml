@@ -48,7 +48,6 @@
     - proxmox-ve
     - pve-headers
     - haveged
-    - wireguard-dkms
     - zfsutils-linux
   loop_control:
     loop_var: item
