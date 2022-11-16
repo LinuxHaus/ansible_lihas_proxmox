@@ -57,6 +57,13 @@
     path: /etc/apt/sources.list.d/pve-enterprise.list
     state: absent
   become: yes
+- name: disable rpcbind ist not explicitly wanted
+  systemd:
+    name: rpcbind.service
+    state: stopped
+    enabled: false
+    masked: true
+  when: lihas_service_rpcbind | default(false)
 - name: load wireguard af_key ah4 ipcomp esp xfrm4 xfrm_tunnel tunnel modules
   lineinfile:
     path: /etc/modules
