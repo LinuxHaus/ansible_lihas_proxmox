@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   author: Adrian Reyer <lihas@lihas.de>
+  namespace: lihas
   description: Install Proxmox PVE (PVE6) on Debian Buster and configure LXCs
   license: GPL-3.0-or-later
   galaxy_tags: []

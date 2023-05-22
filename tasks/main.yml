@@ -127,6 +127,28 @@
   when: forward_ipv6 is defined
   become: yes
 
+- name: collect LXCs
+  ansible.builtin.set_fact:
+    lxc: "{{ lxc | default([]) + [ hostvars[inventory_hostname].roles.proxmox.lxc[item] | default ([]) ] }}"
+    cacheable: false
+  loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
+  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc is defined
+  tags:
+    - create_lxc
+- name: collect LXCs
+  ansible.builtin.set_fact:
+    lxc: "{{ lxc | default([]) + [ hostvars[inventory_hostname].roles_lihas.proxmox.lxc[item] | default ([]) ] }}"
+    cacheable: false
+  loop: "{{ hostvars[inventory_hostname].roles_lihas.proxmox.lxc | flatten(levels=1) }}"
+  when: hostvars[inventory_hostname].roles_lihas is defined and hostvars[inventory_hostname].roles_lihas.proxmox is defined and hostvars[inventory_hostname].roles_lihas.proxmox.lxc is defined
+  tags:
+    - create_lxc
+- name: debug lxc
+  ansible.builtin.debug:
+    var: lxc
+  tags:
+    - create_lxc
+
 - include_tasks: "50-proxmox.yml"
   loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
   loop_control:
@@ -134,3 +156,4 @@
   when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc is defined
   tags:
     - create_lxc
+...
