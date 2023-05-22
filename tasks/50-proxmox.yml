@@ -1,20 +1,29 @@
+---
 - name: check for existing lxc
   shell:
-    cmd: "find /etc/pve/ -name {{ lxcid | quote }}.conf | wc -l"
-#    cmd: "find /etc/pve/{nodes/*/,}{qemu-server,lxc} -name {{ lxcid | quote }}.conf | wc -l"
+    cmd: find /etc/pve/ -name {{ lxcid | quote }}.conf | wc -l
+  #    cmd: "find /etc/pve/{nodes/*/,}{qemu-server,lxc} -name {{ lxcid | quote }}.conf | wc -l"
   register: cmd_results
-  changed_when: False
+  changed_when: false
   tags:
     - create_lxc
-  become: yes
+  become: true
 - name: LXC create {{ lxcid }}
   block:
     - name: pct create
       command:
-        cmd: "pct create {{ lxcid | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].template | default(hostvars[inventory_hostname].roles.proxmox.templates.debian_latest) | quote }} -rootfs {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].rootfs | default('local:8') | quote }} -cmode {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].cmode | default('shell') | quote }} -memory {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].memory | default(2048) | quote }} -swap {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].swap | default(hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].memory | default(2048) | quote) | quote }} -features '{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].features | default() | quote }}' -hostname {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].hostname | default('lxc') | quote }} -unprivileged {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].unprivileged | default(1) | quote }} -onboot {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].onboot | default(0) | quote }} -ssh-public-keys /etc/pve/priv/authorized_keys{% if hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pool is defined %} -pool {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pool }}{% endif %}{% if hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].nameserver is defined %} -nameserver '{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].nameserver }}'{% endif %}"
+        cmd: pct create {{ lxcid | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].template | default(hostvars[inventory_hostname].roles.proxmox.templates.debian_latest)
+          | quote }} -rootfs {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].rootfs | default('local:8') | quote }} -cmode {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].cmode
+          | default('shell') | quote }} -memory {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].memory | default(2048) | quote }} -swap {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].swap
+          | default(hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].memory | default(2048) | quote) | quote }} -features '{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].features
+          | default() | quote }}' -hostname {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].hostname | default('lxc') | quote }} -unprivileged {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].unprivileged
+          | default(1) | quote }} -onboot {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].onboot | default(0) | quote }} -ssh-public-keys /etc/pve/priv/authorized_keys{%
+          if hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pool is defined %} -pool {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pool }}{% endif
+          %}{% if hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].nameserver is defined %} -nameserver '{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].nameserver
+          }}'{% endif %}
     - name: pct set mp
       command:
-        cmd: "pct set {{ lxcid | quote }} -mp{{ mpidx | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp[mpidx] | quote }}"
+        cmd: pct set {{ lxcid | quote }} -mp{{ mpidx | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp[mpidx] | quote }}
       loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp }}"
       loop_control:
         loop_var: dummy
@@ -22,30 +31,30 @@
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].mp is defined )
     - name: pct set net
       command:
-        cmd: "pct set {{ lxcid | quote }} -net{{ netidx | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].net[netidx] | quote }}"
+        cmd: pct set {{ lxcid | quote }} -net{{ netidx | quote }} {{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].net[netidx] | quote }}
       loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].net }}"
       loop_control:
         loop_var: dummy
         index_var: netidx
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].net is defined )
-# TODO: won't work as PVE doesn't allow updating the file in the manner lineinfile tries to do it
-#    - lineinfile:
-#        firstmatch: true
-#        insertafter: "^hostname:"
-#        regexp: "^{{ pctextra }}$"
-#        line: "{{ pctextra }}"
-#        path: "/etc/pve/lxc/{{ lxcid }}.conf"
-#        unsafe_writes: true
-#      loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pct_extra }}"
-#      loop_control:
-#        loop_var: pctextra
-#        index_var: pctidx
-#      when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pct_extra is defined )
+    # TODO: won't work as PVE doesn't allow updating the file in the manner lineinfile tries to do it
+    #    - lineinfile:
+    #        firstmatch: true
+    #        insertafter: "^hostname:"
+    #        regexp: "^{{ pctextra }}$"
+    #        line: "{{ pctextra }}"
+    #        path: "/etc/pve/lxc/{{ lxcid }}.conf"
+    #        unsafe_writes: true
+    #      loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pct_extra }}"
+    #      loop_control:
+    #        loop_var: pctextra
+    #        index_var: pctidx
+    #      when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].pct_extra is defined )
     - name: pct start
       command:
-        cmd: "pct start {{ lxcid | quote }}"
+        cmd: pct start {{ lxcid | quote }}
       when: ( hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].start is defined and hostvars[inventory_hostname].roles.proxmox.lxc[lxcid].start==1 )
   when: cmd_results.stdout_lines[0] == "0"
   tags:
     - create_lxc
-  become: yes
+  become: true

@@ -1,77 +1,74 @@
 ---
-- name: include lihas_common
-  include_role:
+- name: Include lihas_common
+  ansible.builtin.include_role:
     name: lihas_common
   when: role_done_lihas_common is not defined
   tags:
     - create_lxc
-- name: apt_update init
-  set_fact:
-    apt_update: apt_update | default(False)
-  become: yes
-- name: remove legacy /etc/apt/sources.list.d/proxmox.list
-  file:
+- name: Init apt_update
+  ansible.builtin.set_fact:
+    apt_update: apt_update | default(false)
+  become: true
+- name: Remove legacy /etc/apt/sources.list.d/proxmox.list
+  ansible.builtin.file:
     path: /etc/apt/sources.list.d/proxmox.list
     state: absent
   register: result
-  become: yes
-- name: extrepo enable proxmox-pve
-  command:
+  become: true
+- name: Run extrepo enable proxmox-pve
+  ansible.builtin.command:
     cmd: /usr/bin/extrepo enable proxmox-pve
-  changed_when: False
+  changed_when: false
   register: result
   tags:
-  - extrepo
-  become: yes
-- name: set_apt_update
-  set_fact:
-    apt_update: True
+    - extrepo
+  become: true
+- name: Set set_apt_update
+  ansible.builtin.set_fact:
+    apt_update: true
   when: '"repository already existed" not in result.stdout'
   tags:
-  - extrepo
-  become: yes
-- name: apt update
-  apt:
-    update_cache: True
-  when: apt_update | default(False)
-  become: yes
-- name: reset_apt_update
-  set_fact:
-    apt_update: False
-  become: yes
-- name: install software
-  apt:
-    name: "{{ item }}"
+    - extrepo
+  become: true
+- name: Run apt update
+  ansible.builtin.apt:
+    update_cache: true
+  when: apt_update | default(false)
+  become: true
+- name: Set reset_apt_update
+  ansible.builtin.set_fact:
+    apt_update: false
+  become: true
+- name: Install software
+  ansible.builtin.apt:
+    name:
+      - proxmox-ve
+      - pve-headers
+      - haveged
+      - zfsutils-linux
     state: present
-    install_recommends: False
-  loop:
-    - proxmox-ve
-    - pve-headers
-    - haveged
-    - zfsutils-linux
-  loop_control:
-    loop_var: item
-  become: yes
-- name: remove /etc/apt/sources.list.d/pve-enterprise.list
-  file:
+    install_recommends: false
+  become: true
+- name: Remove /etc/apt/sources.list.d/pve-enterprise.list
+  ansible.builtin.file:
     path: /etc/apt/sources.list.d/pve-enterprise.list
     state: absent
-  become: yes
-- name: disable rpcbind ist not explicitly wanted
-  systemd:
+  become: true
+- name: Disable rpcbind ist not explicitly wanted
+  ansible.builtin.systemd:
     name: rpcbind.service
     state: stopped
     enabled: false
     masked: true
   when: lihas_service_rpcbind | default(false)
-- name: load wireguard af_key ah4 ipcomp esp xfrm4 xfrm_tunnel tunnel modules
+- name: Load wireguard af_key ah4 ipcomp esp xfrm4 xfrm_tunnel tunnel modules
   lineinfile:
     path: /etc/modules
-    line: '{{ item }}'
-    create: yes
+    line: "{{ item }}"
+    create: true
     owner: root
     group: root
-    mode: 0444
+    mode: "0444"
   loop:
     - wireguard
     - af_key
@@ -92,68 +89,69 @@
     - ppp_mppe
     - pppoatm
     - pptp
-  become: yes
+  become: true
 
-- name: sysctl ipv4 forwarding default
-  sysctl:
+- name: Set sysctl ipv4 forwarding default
+  ansible.posix.sysctl:
     name: net.ipv4.conf.default.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
-    sysctl_set: yes
+    sysctl_set: true
     value: "{{ forward_ipv4 }}"
   when: forward_ipv4 is defined
-  become: yes
-- name: sysctl ipv4 forwarding all
-  sysctl:
+  become: true
+- name: Set sysctl ipv4 forwarding all
+  ansible.posix.sysctl:
     name: net.ipv4.conf.all.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
-    sysctl_set: yes
+    sysctl_set: true
     value: "{{ forward_ipv4 }}"
   when: forward_ipv4 is defined
-  become: yes
-- name: sysctl ipv6 forwarding default
-  sysctl:
+  become: true
+- name: Set sysctl ipv6 forwarding default
+  ansible.posix.sysctl:
     name: net.ipv6.conf.default.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
-    sysctl_set: yes
+    sysctl_set: true
     value: "{{ forward_ipv6 }}"
   when: forward_ipv6 is defined
-  become: yes
-- name: sysctl ipv6 forwarding all
-  sysctl:
+  become: true
+- name: Set sysctl ipv6 forwarding all
+  ansible.posix.sysctl:
     name: net.ipv6.conf.all.forwarding
     sysctl_file: /etc/sysctl.d/30-ansible-proxmox.conf
-    sysctl_set: yes
+    sysctl_set: true
     value: "{{ forward_ipv6 }}"
   when: forward_ipv6 is defined
-  become: yes
-
-- name: collect LXCs
+  become: true
+- name: Collect LXCs
   ansible.builtin.set_fact:
-    lxc: "{{ lxc | default([]) + [ hostvars[inventory_hostname].roles.proxmox.lxc[item] | default ([]) ] }}"
+    lxc: "{{ lxc | default([]) + [hostvars[inventory_hostname].roles.proxmox.lxc[item] | default([])] }}"
     cacheable: false
   loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
-  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc is defined
+  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc
+    is defined
   tags:
     - create_lxc
-- name: collect LXCs
+- name: Collect LXCs
   ansible.builtin.set_fact:
     lxc: "{{ lxc | default([]) + [ hostvars[inventory_hostname].roles_lihas.proxmox.lxc[item] | default ([]) ] }}"
     cacheable: false
   loop: "{{ hostvars[inventory_hostname].roles_lihas.proxmox.lxc | flatten(levels=1) }}"
-  when: hostvars[inventory_hostname].roles_lihas is defined and hostvars[inventory_hostname].roles_lihas.proxmox is defined and hostvars[inventory_hostname].roles_lihas.proxmox.lxc is defined
+  when: hostvars[inventory_hostname].roles_lihas is defined and hostvars[inventory_hostname].roles_lihas.proxmox is defined and hostvars[inventory_hostname].roles_lihas.proxmox.lxc
+    is defined
   tags:
     - create_lxc
-- name: debug lxc
+- name: Debug lxc
   ansible.builtin.debug:
     var: lxc
   tags:
     - create_lxc
-
-- include_tasks: "50-proxmox.yml"
+- name: Include 50-proxmox.yml
+  ansible.builtin.include_tasks: 50-proxmox.yml
   loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
   loop_control:
     loop_var: lxcid
-  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc is defined
+  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc
+    is defined
   tags:
     - create_lxc
-...
