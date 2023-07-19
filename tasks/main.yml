@@ -144,6 +144,7 @@
 - name: Debug lxc
   ansible.builtin.debug:
     var: lxc
+    verbosity: 1
   tags:
     - create_lxc
 - name: Include 50-proxmox.yml
