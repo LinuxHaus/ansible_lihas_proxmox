@@ -15,6 +15,15 @@
     state: absent
   register: result
   become: true
+- name: Remove Proxmox Enterprise Repositories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  with_list:
+    - /etc/apt/sources.list.d/pve-enterprise.list
+    - /etc/apt/sources.list.d/ceph.list
+  when: not pve_enterprise | default(false)
 - name: Run extrepo enable proxmox-pve
   ansible.builtin.command:
     cmd: /usr/bin/extrepo enable proxmox-pve
@@ -23,10 +32,11 @@
   tags:
     - extrepo
   become: true
+  when: not pve_enterprise | default(false)
 - name: Set set_apt_update
   ansible.builtin.set_fact:
     apt_update: true
-  when: '"repository already existed" not in result.stdout'
+  when: not pve_enterprise | default(false) and '"repository already existed" not in result.stdout'
   tags:
     - extrepo
   become: true
@@ -44,7 +54,6 @@
     name:
       - proxmox-ve
       - pve-headers
-      - haveged
       - zfsutils-linux
     state: present
     install_recommends: false

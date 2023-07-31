@@ -1,5 +1,5 @@
 # lihas_proxmox
-Installs Proxmox PVE6
+Installs Proxmox PVE on bullseye/bookworm
 
 added Features:
 
@@ -34,6 +34,8 @@ Variables:
 forward_ipv6: [0|1]
 forward_ipv4: [0|1]
 lihas_service_rpcbind: false
+# Remove PVE Enterprise repositories by default
+pve_enterprise: false
 %:
   config:
     hosts:
