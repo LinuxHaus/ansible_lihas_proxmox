@@ -5,7 +5,7 @@ galaxy_info:
   description: Install Proxmox PVE (PVE6) on Debian Buster and configure LXCs
   license: GPL-3.0-or-later
   galaxy_tags: []
-  min_ansible_version: 2.4
+  min_ansible_version: "2.4"
   platforms:
     - name: Debian
       versions:

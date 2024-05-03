@@ -1,4 +1,5 @@
 ---
-- hosts: "*"
+- name: "Run lihas_proxmox"
+  hosts: "*"
   roles:
     - lihas_proxmox

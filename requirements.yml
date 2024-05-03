@@ -1,7 +1,7 @@
 ---
-#collections:
-#- ansible.posix
-#roles:
+# collections:
+# - ansible.posix
+# roles:
 - name: lihas_proxmox
   src: https://github.com/LinuxHaus/ansible_lihas_proxmox.git
   version: origin/master

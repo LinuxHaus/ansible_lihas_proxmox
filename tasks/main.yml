@@ -71,7 +71,7 @@
     masked: true
   when: lihas_service_rpcbind | default(false)
 - name: Load wireguard af_key ah4 ipcomp esp xfrm4 xfrm_tunnel tunnel modules
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/modules
     line: "{{ item }}"
     create: true
@@ -134,29 +134,21 @@
   become: true
 - name: Collect LXCs roles
   ansible.builtin.set_fact:
-    lxc: "{{ lxc | default([]) + [hostvars[inventory_hostname].roles.proxmox.lxc[item] | default([])] }}"
+    lxc: "{{ lxc | default({}) | combine(hostvars[inventory_hostname].roles.proxmox.lxc | default({})) }}"
     cacheable: false
-  loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
-  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc
-    is defined
   tags:
     - create_lxc
 - name: Collect LXCs roles_lihas
   ansible.builtin.set_fact:
-    lxc: "{{ lxc | default([]) + [ hostvars[inventory_hostname].roles_lihas.proxmox.lxc[item] | default ([]) ] }}"
+    lxc: "{{ lxc | default({}) | combine(hostvars[inventory_hostname].roles_lihas.proxmox.lxc | default({})) }}"
     cacheable: false
-  loop: "{{ hostvars[inventory_hostname].roles_lihas.proxmox.lxc | flatten(levels=1) }}"
-  when: hostvars[inventory_hostname].roles_lihas is defined and hostvars[inventory_hostname].roles_lihas.proxmox is defined and hostvars[inventory_hostname].roles_lihas.proxmox.lxc
-    is defined
   tags:
     - create_lxc
 - name: Collect LXCs %config
   ansible.builtin.set_fact:
-    lxc: "{{ lxc | default([]) + [ hostvars[inventory_hostname].roles.proxmox.lxc[item] | default ([]) ] }}"
+    lxc: "{{ lxc | default([]) | combine(hostvars[inventory_hostname][item]['config']['roles']['proxmox']['lxc'] | default({})) }}"
     cacheable: false
-  loop: "{{ hostvars[inventory_hostname].roles_lihas.proxmox.lxc | flatten(levels=1) }}"
-  when: hostvars[inventory_hostname].roles_lihas is defined and hostvars[inventory_hostname].roles_lihas.proxmox is defined and hostvars[inventory_hostname].roles_lihas.proxmox.lxc
-    is defined
+  with_list: "{{ configspaces }}"
   tags:
     - create_lxc
 - name: Debug lxc
@@ -167,10 +159,8 @@
     - create_lxc
 - name: Include 50-proxmox.yml
   ansible.builtin.include_tasks: 50-proxmox.yml
-  loop: "{{ hostvars[inventory_hostname].roles.proxmox.lxc | flatten(levels=1) }}"
+  with_dict: "{{ lxc | default({}) }}"
   loop_control:
     loop_var: lxcid
-  when: hostvars[inventory_hostname].roles is defined and hostvars[inventory_hostname].roles.proxmox is defined and hostvars[inventory_hostname].roles.proxmox.lxc
-    is defined
   tags:
     - create_lxc
