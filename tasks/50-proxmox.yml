@@ -14,11 +14,20 @@
     - create_lxc
   become: true
   block:
+    - name: "Set template"
+      ansible.builtin.set_fact:
+        template: "{{ hostvars[inventory_hostname].roles.proxmox.templates.debian_latest | default('') }}"
+    - name: "Set template"
+      ansible.builtin.set_fact:
+        template: "{{ hostvars[inventory_hostname].lihas_roles.proxmox.templates.debian_latest | default(template) }}"
+    - name: "Set template"
+      ansible.builtin.set_fact:
+        template: "{{ lxcid.value.template | default(template) }}"
     - name: "Run pct create {{ lxcid.key }}"
       ansible.builtin.command: # noqa: no-changed-when
         cmd: >
           pct create {{ lxcid.key | quote }}
-          {{ lxcid.value.template | default(hostvars[inventory_hostname].lihas_roles.proxmox.templates.debian_latest |  default(hostvars[inventory_hostname].roles.proxmox.templates.debian_latest)) | quote }}
+          {{ template | quote }}
           -rootfs {{ lxcid.value.rootfs | default('local:8') | quote }}
           -cmode {{ lxcid.value.cmode | default('shell') | quote }}
           -memory {{ lxcid.value.memory | default(2048) | quote }}
