@@ -58,11 +58,6 @@
     state: present
     install_recommends: false
   become: true
-- name: Remove /etc/apt/sources.list.d/pve-enterprise.list
-  ansible.builtin.file:
-    path: /etc/apt/sources.list.d/pve-enterprise.list
-    state: absent
-  become: true
 - name: Disable rpcbind ist not explicitly wanted
   ansible.builtin.systemd:
     name: rpcbind.service
