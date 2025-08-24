@@ -22,6 +22,9 @@
         template: "{{ hostvars[inventory_hostname].lihas_roles.proxmox.templates.debian_latest | default(template) }}"
     - name: "Set template"
       ansible.builtin.set_fact:
+        template: "{{ hostvars[inventory_hostname].roles_lihas.proxmox.templates.debian_latest | default(template) }}"
+    - name: "Set template"
+      ansible.builtin.set_fact:
         template: "{{ lxcid.value.template | default(template) }}"
     - name: "Run pct create {{ lxcid.key }}"
       ansible.builtin.command: # noqa: no-changed-when

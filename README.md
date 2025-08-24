@@ -42,7 +42,7 @@ pve_enterprise: false
       "MY.MANAGE.MENT.IP":
          - pve.example.com
          - pve
-roles:
+roles_lihas:
   proxmox:
     templates:
       debian_latest: local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz
