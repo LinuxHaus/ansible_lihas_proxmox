@@ -54,7 +54,6 @@
   ansible.builtin.apt:
     name:
       - proxmox-ve
-      - pve-headers
       - zfsutils-linux
     state: present
     install_recommends: false
